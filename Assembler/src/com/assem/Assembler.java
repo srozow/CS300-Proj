@@ -1,4 +1,4 @@
-package com.cs300.assembler;
+package com.assem;
 
 import java.io.File;
 import java.util.Formatter;
@@ -37,6 +37,7 @@ public class Assembler {
             String label = null;
             String opcode = null;
             String parameters = null;
+            String address = null;
 
 
             //Setup the values for the current line's label, opcode, and parameters if it exists
@@ -63,7 +64,17 @@ public class Assembler {
 
                     //write this line to the intermediate file with the current location converted to hexadecimal
                     //as the address
-                    writeLine(toHex(LOCCTR), label, opcode, parameters);
+                    address = toHex(LOCCTR);
+                    writeLine(address, label, opcode, parameters);
+
+                    //First we have to handle the labels
+
+                    if (label != null) {
+                        if (Tables.SYMTAB.get(label) == null)
+                            Tables.SYMTAB.put(label, address);
+                        else
+                            System.out.println("Error! Repeat label " + label + " found in file.");
+                    }
 
 
                     //Next we need to check opcodes
@@ -121,6 +132,13 @@ public class Assembler {
 
 
                     }
+
+                    //Now we are done with opcodes
+                    //Moving on to
+
+
+
+
                 }
 
             }

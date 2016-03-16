@@ -1,4 +1,4 @@
-package com.cs300.assembler;
+package com.assem;
 
 import java.util.Hashtable;
 
