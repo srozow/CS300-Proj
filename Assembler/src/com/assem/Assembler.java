@@ -41,104 +41,32 @@ public class Assembler {
 
 
             //Setup the values for the current line's label, opcode, and parameters if it exists
-            if (!line.trim().isEmpty()) {
+            if (!line.trim().isEmpty() && !line.startsWith(".")) {
 
-                if (!line.startsWith(".")) {
+                //First setup the values of this line's label, opcode, and parameters
+                String[] values = readLine(line);
+                label = values[0];
+                opcode = values[1];
+                parameters = values[2];
 
-                    //Checks to see if the line starts with a tab
-                    if (line.startsWith("\u0009")) {
-                        line = line.trim();
-                        String[] s = line.split("\u0009");
-                        opcode = s[0];
-                        if (s.length > 1)
-                            parameters = s[1];
-                    }
-                    else {
-                        line = line.trim();
-                        String[] s = line.split("\u0009");
-                        label = s[0];
-                        opcode = s[1];
-                        if (s.length > 2)
-                            parameters = s[2];
-                    }
+                //write this line to the intermediate file with the current location converted to hexadecimal
+                //as the address
+                address = toHex(LOCCTR);
+                writeLine(address, label, opcode, parameters);
 
-                    //write this line to the intermediate file with the current location converted to hexadecimal
-                    //as the address
-                    address = toHex(LOCCTR);
-                    writeLine(address, label, opcode, parameters);
+                //First we have to handle the labels
 
-                    //First we have to handle the labels
-
-                    if (label != null) {
-                        if (Tables.SYMTAB.get(label) == null)
-                            Tables.SYMTAB.put(label, address);
-                        else
-                            System.out.println("Error! Repeat label " + label + " found in file.");
-                    }
+                if (label != null) {
+                    if (Tables.SYMTAB.get(label) == null)
+                        Tables.SYMTAB.put(label, address);
+                    else
+                        System.out.println("Error! Repeat label " + label + " found in file.");
+                }
 
 
-                    //Next we need to check opcodes
-                    if (opcode != null) {
-                        if (opcode.equals("START")) {
-                            LOCCTR = Integer.parseInt(parameters);
-                            System.out.print("Starting location is ");
-                            System.out.println(LOCCTR);
-                        }
-                        else if (Tables.OPTAB.get(opcode) != null) {
-                            if (opcode.equals("CLEAR") || opcode.equals("COMPR") || opcode.equals("TIXR"))
-                                LOCCTR += 2;
-                            else
-                                LOCCTR += 3;
-                        }
-                        else if (opcode.startsWith("+")) {
-                            LOCCTR += 4;
-                        }
-                        else if (opcode.equals("WORD")) {
-                            LOCCTR += 3;
-                        }
-                        else if (opcode.equals("RESW")) {
-                            //assign address
-
-                            //push the LOCCTR forward by 3 bytes per the amount of words.
-                            LOCCTR = LOCCTR + (Integer.parseInt(parameters) * 3);
-                        }
-                        else if (opcode.equals("RESB")) {
-                            //assign address
-
-                            //push the LOCCTR forward by 1 per byte reserved
-                            LOCCTR += Integer.parseInt(parameters);
-                        }
-                        else if (opcode.equals("BYTE")) {
-                            //if X'EF' every two digits in quotes will be a byte
-                            //if C'F' every digit will be a byte
-                            if (parameters.startsWith("X")) {
-                                int digits = parameters.substring(2, opcode.length()).length();
-                                //System.out.println(digits);
-                                LOCCTR += digits/2;
-                            }
-                            else if (parameters.startsWith("C")) {
-                                int digits = parameters.substring(2, opcode.length()).length();
-                                //System.out.println(digits);
-                                LOCCTR += digits*2;
-                            }
-
-                        }
-                        else if (opcode.equals("CSECT")) {
-                            LOCCTR = 0;
-                        }
-                        else if (opcode.equals("BASE") || opcode.equals("LTORG") || opcode.equals("EXTDEF") || opcode.equals("EXTREF")) {
-                            //don't increment the LOCCTR
-                        }
-
-
-                    }
-
-                    //Now we are done with opcodes
-                    //Moving on to
-
-
-
-
+                //Next we need use the opcode to increment the LOCCTR
+                if (opcode != null) {
+                    incrementCounter(opcode, parameters);
                 }
 
             }
@@ -152,6 +80,98 @@ public class Assembler {
 
     }
 
+
+    private String[] readLine(String line) {
+
+        String[] values = new String[3];
+        //Checks to see if the line starts with a tab
+        if (line.startsWith("\u0009")) {
+            line = line.trim();
+            String[] s = line.split("\u0009");
+            values[0] = null;
+            values[1] = s[0];
+            if (s.length > 1)
+                values[2] = s[1];
+        }
+        else {
+            line = line.trim();
+            String[] s = line.split("\u0009");
+            values[0] = s[0];
+            values[1] = s[1];
+            if (s.length > 2)
+                values[2] = s[2];
+        }
+        return values;
+    }
+
+
+    private void incrementCounter(String op, String params) {
+
+        if (op.equals("START")) {
+            LOCCTR = Integer.parseInt(params);
+            System.out.print("Starting location is ");
+            System.out.println(LOCCTR);
+        }
+        else if (Tables.OPTAB.get(op) != null) {
+            if (op.equals("CLEAR") || op.equals("COMPR") || op.equals("TIXR"))
+                LOCCTR += 2;
+            else
+                LOCCTR += 3;
+        }
+        else if (op.startsWith("+")) {
+            LOCCTR += 4;
+        }
+        else if (op.equals("WORD")) {
+            LOCCTR += 3;
+        }
+        else if (op.equals("RESW")) {
+            //assign address
+
+            //push the LOCCTR forward by 3 bytes per the amount of words.
+            LOCCTR = LOCCTR + (Integer.parseInt(params) * 3);
+        }
+        else if (op.equals("RESB")) {
+            //assign address
+
+            //push the LOCCTR forward by 1 per byte reserved
+            LOCCTR += Integer.parseInt(params);
+        }
+        else if (op.equals("BYTE")) {
+            //if X'EF' every two digits in quotes will be a byte
+            //if C'F' every digit will be a byte
+            if (params.startsWith("X")) {
+                int digits = params.substring(2, op.length()).length();
+                //System.out.println(digits);
+                LOCCTR += digits/2;
+            }
+            else if (params.startsWith("C")) {
+                int digits = params.substring(2, op.length()).length();
+                //System.out.println(digits);
+                LOCCTR += digits*2;
+            }
+
+        }
+        else if (op.equals("CSECT")) {
+            LOCCTR = 0;
+        }
+        else if (op.equals("BASE") || op.equals("LTORG") || op.equals("EXTDEF") || op.equals("EXTREF")) {
+            //don't increment the LOCCTR
+        }
+
+    }
+
+    //Takes a decimal number and converts it to a 4 digit hexadecimal value
+    public String toHex(int dec) {
+        String hex = Integer.toHexString(dec);
+
+        while (hex.length() < 4)
+            hex = "0" + hex;
+
+        return hex;
+    }
+
+    //Readfile functions
+
     public void closeFile() {
         scan.close();
     }
@@ -164,6 +184,8 @@ public class Assembler {
             System.out.println("Failed to create file.");
         }
     }
+
+    //Writefile functions
 
     public void writeLine(String address, String label, String opcode, String params) {
         String a;
@@ -198,16 +220,6 @@ public class Assembler {
 
     public void closeInter() {
         inter.close();
-    }
-
-    //Takes a decimal number and converts it to a 4 digit hexadecimal value
-    public String toHex(int dec) {
-        String hex = Integer.toHexString(dec);
-
-        while (hex.length() < 4)
-            hex = "0" + hex;
-
-        return hex;
     }
 
 }
