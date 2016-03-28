@@ -147,7 +147,7 @@ public class Assembler {
             else if (params.startsWith("C")) {
                 int digits = params.substring(2, op.length()).length();
                 //System.out.println(digits);
-                LOCCTR += digits*2;
+                LOCCTR += digits;
             }
 
         }
