@@ -12,15 +12,8 @@ public class Assembler {
     private Scanner scan;
     private Formatter inter;
     private int LOCCTR = 0;
+    private static String fileName = "assemblyCode/control_section.txt";
 
-    public void openFile() {
-        try{
-            scan = new Scanner(new File("assemblyCode/control_section.txt"));
-        }
-        catch(Exception e) {
-            System.out.println("could not find this file");
-        }
-    }
 
     public void passOne() {
 
@@ -77,6 +70,9 @@ public class Assembler {
         //close the files
         closeFile();
         closeInter();
+
+        //start pass two
+        PassTwo.passTwo("intermediateFile.txt");
 
     }
 
@@ -172,9 +168,20 @@ public class Assembler {
 
     //Readfile functions
 
+    public void openFile() {
+        try{
+            scan = new Scanner(new File(fileName));
+        }
+        catch(Exception e) {
+            System.out.println("could not find this file");
+        }
+    }
+
     public void closeFile() {
         scan.close();
     }
+
+    //Writefile functions
 
     public void makeFile() {
         try {
@@ -184,8 +191,6 @@ public class Assembler {
             System.out.println("Failed to create file.");
         }
     }
-
-    //Writefile functions
 
     public void writeLine(String address, String label, String opcode, String params) {
         String a;
