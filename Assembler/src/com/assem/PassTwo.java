@@ -1,6 +1,8 @@
 package com.assem;
 
 import java.io.File;
+import java.math.BigInteger;
+import java.util.Formatter;
 import java.util.Scanner;
 
 /**
@@ -29,7 +31,7 @@ public class PassTwo
             String opcode = null;
             String parameters = null;
             String address = null;
-			Int code = null;
+			Integer code = null;
 
 
             //Setup the values for the current line's address, label, opcode, and parameters if it exists
@@ -37,15 +39,15 @@ public class PassTwo
 
                 //First setup the values of this line's label, opcode, and parameters
                 String[] values = readLine(line);
-				address = values[0]
+				address = values[0];
                 label = values[1];
                 opcode = values[2];
                 parameters = values[3];
 				
-				if (paramaters != null)
+				if (parameters != null)
 				{
-					if (Tables.SYMTAB.get(paramaters) != null)
-						paramaters = Tables.SYMTAB.get(paramaters);
+					if (Tables.SYMTAB.get(parameters) != null)
+						parameters = Tables.SYMTAB.get(parameters);
 				}
 				
 				code = generate_code(opcode, parameters);
@@ -60,7 +62,7 @@ public class PassTwo
 
     }
 	
-	private void generate_code(String op, String params)
+	private static Integer generate_code(String op, String params)
 	{
 		
 		//need to filter different parameters
@@ -72,16 +74,16 @@ public class PassTwo
 		op = hexToBin(op);
 		params = hexToBin(params);
 		// convert to strings (for concatenation)
-		Integer.toString(op);
-		Integer.toString(params);
+		op.toString();
+		params.toString();
 		// pad with extra zeroes (for format 3)
 		params = String.format("%012d", params);
 		//set up default values for testing purposes
-		String n = 0;
-		String i = 0;
-		String x = 0;
-		String b = 0;
-		String p = 0;
+		int n = 0;
+		int i = 0;
+		int x = 0;
+		int b = 0;
+		int p = 0;
 		//need to figure out generation of code that leads to flags being set, flags for reference
 		/******
 		flags n & i:
@@ -102,7 +104,7 @@ public class PassTwo
 		//OP code n i x b p e + address
 		//op, n, i, x, b, p, e, params
 		// concatenate Opcode, flags, and Params
-		String out = "op" + "n" + "i" + "x" + "b" + "p" + "e" + "params"'
+		String out = "op" + "n" + "i" + "x" + "b" + "p" + "e" + "params";
 		// convert to Integers
 		int ObjCode = Integer.parseInt(numberAsString);
 		// convert back to hex
@@ -113,7 +115,7 @@ public class PassTwo
 		return ObjCode
 	}
 
-	public void writeObjectCode(String code) 
+	public static void writeObjectCode(Integer code) 
 	{
 		// write code to file
 	}
@@ -138,7 +140,7 @@ public class PassTwo
 
     }
 	// read line function
-	private String[] readLine(String line) {
+	private static String[] readLine(String line) {
 
         String[] values = new String[3];
         //Checks to see if the line starts with a tab
@@ -170,7 +172,7 @@ public class PassTwo
 
     //Writefile functions
 
-    public void makeFile() {
+    public static void makeFile() {
         try {
             obj = new Formatter("objectCode.txt");
         }
@@ -179,10 +181,21 @@ public class PassTwo
         }
     }
 	
-	public void closeObj() {
+	public static void closeObj() {
         obj.close();
     }
 
+	 public static void openFile() {
+	     try{
+	         scan = new Scanner(new File(fileName));
+	     }
+	     catch(Exception e) {
+	         System.out.println("could not find this file");
+	     }
+	 }
 
+	 public static void closeFile() {
+	     scan.close();
+	 }
 }
 
