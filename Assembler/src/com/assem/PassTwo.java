@@ -5,6 +5,8 @@ import java.math.BigInteger;
 import java.util.Formatter;
 import java.util.Scanner;
 
+import com.assem.Tables;
+
 /**
  * 
  Created by ckhenson on 4/4/2016, with code from Assembler.java Created by efetsko on 3/28/2016.
@@ -13,7 +15,8 @@ public class PassTwo
 {
 
     private static Scanner scan;
-	private Formatter inter;
+	private static Formatter obj;
+	private static String fileName = "intermediateFile.txt";
 
     public static void passTwo(String fileName) {
 
@@ -31,7 +34,7 @@ public class PassTwo
             String opcode = null;
             String parameters = null;
             String address = null;
-			Integer code = null;
+			String code = null;
 
 
             //Setup the values for the current line's address, label, opcode, and parameters if it exists
@@ -51,7 +54,7 @@ public class PassTwo
 				}
 				
 				code = generate_code(opcode, parameters);
-				writeObjectCode(code);
+				//writeObjectCode(code);
             }
 
         }
@@ -62,14 +65,14 @@ public class PassTwo
 
     }
 	
-	private static Integer generate_code(String op, String params)
+	private static String generate_code(String op, String params)
 	{
 		
 		//need to filter different parameters
 		// also need to filter instruction set extensions
 		//lets assume format 3
 		// get the object code for the OPCODE
-		op = Tables.OP.get(op);
+		op = Tables.OPTAB.get(op);
 		// convert OPCODE and Params to binary
 		op = hexToBin(op);
 		params = hexToBin(params);
@@ -106,13 +109,13 @@ public class PassTwo
 		// concatenate Opcode, flags, and Params
 		String out = "op" + "n" + "i" + "x" + "b" + "p" + "e" + "params";
 		// convert to Integers
-		int ObjCode = Integer.parseInt(numberAsString);
+		//int ObjCode = Integer.parseInt(numberAsString);
 		// convert back to hex
-		ObjCode = binaryToHex(ObjCode);
+		String ObjCode = binaryToHex(out);
 		// print for testing
 		System.out.println(out);
 		// later will write to a file, or send to another function for writing to file
-		return ObjCode
+		return ObjCode;
 	}
 
 	public static void writeObjectCode(Integer code) 
