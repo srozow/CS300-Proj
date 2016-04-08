@@ -41,25 +41,30 @@ public class PassTwo
             if (!line.trim().isEmpty() && !line.startsWith(".")) {
 
                 //First setup the values of this line's label, opcode, and parameters
+            	
                 String[] values = readLine(line);
-				address = values[0];
-                label = values[1];
-                opcode = values[2];
-                /**
-                ERROR HERE
-                 **/
-                parameters = values[3];
-                // USE THIS LINE INSTEAD FOR TESTING
-                //parameters = "LENGTH";
+                if (Tables.OPTAB.get(values[1]) == null)
+                {
+                	address = values[0];
+                    	opcode = values[1];
+                    	parameters = values[2];
+                }
+                else
+                {
+                	address = values[0];
+                	label = values[1];
+                    	opcode = values[2];
+                    	parameters = values[3];
+                }
 				
-				if (parameters != null)
-				{
-					if (Tables.SYMTAB.get(parameters) != null)
-						parameters = Tables.SYMTAB.get(parameters);
-				}
+		if (parameters != null)
+		{
+			if (Tables.SYMTAB.get(parameters) != null)
+				parameters = Tables.SYMTAB.get(parameters);
+		}
 				
-				code = generate_code(opcode, parameters);
-				//writeObjectCode(code);
+		code = generate_code(opcode, parameters);
+		//writeObjectCode(code);
             }
 
         }
