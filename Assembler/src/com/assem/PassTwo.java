@@ -43,20 +43,16 @@ public class PassTwo
                 //First setup the values of this line's label, opcode, and parameters
             	
                 String[] values = readLine(line);
-                if (Tables.OPTAB.get(values[1]) == null)
-                {
-                	address = values[0];
-                    	opcode = values[1];
-                    	parameters = values[2];
-                }
-                else
-                {
-                	address = values[0];
-                	label = values[1];
-                    	opcode = values[2];
-                    	parameters = values[3];
-                }
-				
+                address = values[0];
+                label = values[1];
+                opcode = values[2];
+                parameters = values[3];
+                /***
+                System.out.println(address);
+                System.out.println(label);
+                System.out.println(opcode);
+                System.out.println(parameters);
+                /****/
 		if (parameters != null)
 		{
 			if (Tables.SYMTAB.get(parameters) != null)
@@ -72,7 +68,6 @@ public class PassTwo
         closeFile();
         closeObj();
 
-
     }
 	
 	private static String generate_code(String op, String params)
@@ -81,23 +76,35 @@ public class PassTwo
 		//need to filter different parameters
 		// also need to filter instruction set extensions
 		//lets assume format 3
+		/**These functions filter different formats, modes, and data**/
+		// this filters the opcode allowing different formats, modes, and data filtering
+		String opFilter = opFilter(op);
+		// this function will later generate addressing mode from parameters
+		String AddressingMode = filterParamaters(params);
+		/**After this there will be if statements to set up n, i x, b, p, and e for each formats, modes, and data**/
 		// get the object code for the OPCODE
 		op = Tables.OPTAB.get(op);
+		/**for testing purposes, params will always be op (for cases such as #3**/
+		params = op;
+		/************************************************************************/
 		// convert OPCODE and Params to binary
 		op = hexToBin(op);
 		params = hexToBin(params);
-		// convert to strings (for concatenation)
-		op.toString();
-		params.toString();
+		/***
+		System.out.println(params);
+		System.out.println(op);
+		/****/
 		// pad with extra zeroes (for format 3)
-		params = String.format("%012d", params);
+		params = String.format("%012d", Integer.parseInt(params));
 		//set up default values for testing purposes
+		/****/
 		int n = 0;
 		int i = 0;
 		int x = 0;
 		int b = 0;
 		int p = 0;
 		int e = 0;
+		/****/
 		//need to figure out generation of code that leads to flags being set, flags for reference
 		/******
 		flags n & i:
@@ -115,18 +122,27 @@ public class PassTwo
 			e=0 use Format 3
 			e=1 use Format 4
 		***/
-		//OP code n i x b p e + address
-		//op, n, i, x, b, p, e, params
 		// concatenate Opcode, flags, and Params
 		String out = op + n + i + x + b + p + e + params;
-		// convert to Integers
-		//int ObjCode = Integer.parseInt(numberAsString);
+		//System.out.println(out);
 		// convert back to hex
 		String ObjCode = binaryToHex(out);
 		// print for testing
-		System.out.println(out);
+		System.out.println(ObjCode);
 		// later will write to a file, or send to another function for writing to file
 		return ObjCode;
+	}
+
+	private static String opFilter(String op) {
+		// TODO Auto-generated method stub
+		//filters different opcodes, for different instructions, such as STA, LDA, JLT, COMPR, etc
+		return op;
+	}
+
+	private static String filterParamaters(String mode) {
+		// TODO Auto-generated method stub
+		//filters different paramets, such as LABEL,X or Register,Register or #3 and so on
+		return mode;
 	}
 
 	public static void writeObjectCode(Integer code) 
@@ -137,7 +153,10 @@ public class PassTwo
 ERROR HERE
  **/
 	public static String hexToBin(String s) {
-	  return new BigInteger(s, 16).toString(2);
+	  //return new BigInteger(s, 16).toString(2);
+		int k = Integer.parseInt(s,16); 
+		s = Integer.toBinaryString(k);
+		return s;
 	}
 
 	public static String binaryToHex(String bin) {
@@ -158,7 +177,7 @@ ERROR HERE
 	// read line function
 	private static String[] readLine(String line) {
 
-        String[] values = new String[3];
+        String[] values = new String[4];
         //Checks to see if the line starts with a tab
         if (line.startsWith("\u0009")) {
             line = line.trim();
@@ -168,13 +187,15 @@ ERROR HERE
             if (s.length > 1)
                 values[2] = s[1];
         }
+
         else {
             line = line.trim();
             String[] s = line.split("\u0009");
             values[0] = s[0];
             values[1] = s[1];
-            if (s.length > 2)
-                values[2] = s[2];
+            values[2] = s[2];
+            if (s.length > 3)
+                values[3] = s[3];
         }
         return values;
     }
