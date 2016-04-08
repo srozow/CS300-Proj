@@ -45,7 +45,12 @@ public class PassTwo
 				address = values[0];
                 label = values[1];
                 opcode = values[2];
+                /**
+                ERROR HERE
+                 **/
                 parameters = values[3];
+                // USE THIS LINE INSTEAD FOR TESTING
+                //parameters = "LENGTH";
 				
 				if (parameters != null)
 				{
@@ -87,6 +92,7 @@ public class PassTwo
 		int x = 0;
 		int b = 0;
 		int p = 0;
+		int e = 0;
 		//need to figure out generation of code that leads to flags being set, flags for reference
 		/******
 		flags n & i:
@@ -107,7 +113,7 @@ public class PassTwo
 		//OP code n i x b p e + address
 		//op, n, i, x, b, p, e, params
 		// concatenate Opcode, flags, and Params
-		String out = "op" + "n" + "i" + "x" + "b" + "p" + "e" + "params";
+		String out = op + n + i + x + b + p + e + params;
 		// convert to Integers
 		//int ObjCode = Integer.parseInt(numberAsString);
 		// convert back to hex
@@ -122,7 +128,9 @@ public class PassTwo
 	{
 		// write code to file
 	}
-
+/**
+ERROR HERE
+ **/
 	public static String hexToBin(String s) {
 	  return new BigInteger(s, 16).toString(2);
 	}
