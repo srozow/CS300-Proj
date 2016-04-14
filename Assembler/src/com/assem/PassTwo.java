@@ -84,18 +84,14 @@ public class PassTwo
 		/**After this there will be if statements to set up n, i x, b, p, and e for each formats, modes, and data**/
 		// get the object code for the OPCODE
 		op = Tables.OPTAB.get(op);
-		/**for testing purposes, params will always be op (for cases such as #3**/
-		params = op;
 		/************************************************************************/
 		// convert OPCODE and Params to binary
-		op = hexToBin(op);
-		params = hexToBin(params);
 		/***
 		System.out.println(params);
 		System.out.println(op);
 		/****/
 		// pad with extra zeroes (for format 3)
-		params = String.format("%012d", Integer.parseInt(params));
+		
 		//set up default values for testing purposes
 		/****/
 		int n = 0;
@@ -104,6 +100,63 @@ public class PassTwo
 		int b = 0;
 		int p = 0;
 		int e = 0;
+		// need to set up r1 and r2
+		int r1 = 0;
+		int r2 = 0;
+		//convert r1 and r2 to binary if applicable
+		if (opFilter == 1)
+		{
+			// params are not needed
+			//convert op to binary
+			op = hexToBin(op);
+			// concatenate Opcode, flags, and Params
+			String out = op;
+			//System.out.println(out);
+			// convert back to hex
+			String ObjCode = binaryToHex(out);
+			return ObjCode;
+		}
+		else if (opFilter == 2)
+		{
+			//convert op to binary
+			op = hexToBin(op);
+			// need to get params to form r1 and r2
+			
+			//pad if needed for r1 and r2
+			
+			// concatenate Opcode, flags, and Params
+			String out = op + r1 + r2;
+			//System.out.println(out);
+			// convert back to hex
+			String ObjCode = binaryToHex(out);
+			//return ObjCode;
+		}
+		// set e to 0 (form 3)
+		// or to 1 (form 4)
+		// then continue
+		else if (opFilter == 3)
+		{
+			e = 0;
+		}
+		else if (opFilter == 4)
+		{
+			e = 1;
+		}
+		// here is where we have statements for the parameters
+		
+		
+		//convert op and params to binary
+		op = hexToBin(op);
+		params = hexToBin(params);
+		// padding for either format 3 or format 4
+		if (e == 0)
+		{
+			params = String.format("%012d", Integer.parseInt(params));
+		}
+		else
+		{
+			params = String.format("%020d", Integer.parseInt(params));
+		}
 		/****/
 		//need to figure out generation of code that leads to flags being set, flags for reference
 		/******
@@ -133,16 +186,52 @@ public class PassTwo
 		return ObjCode;
 	}
 
-	private static String opFilter(String op) {
+	private static String opFilter(String opcode) {
 		// TODO Auto-generated method stub
 		//filters different opcodes, for different instructions, such as STA, LDA, JLT, COMPR, etc
-		return op;
+		if (Table.OPFORM.get(opcode) != null)
+		{
+			opFilter = Table.OPFORM.get(opcode);
+		}
+		else
+		{
+			opFilter = 3;
+			if (opcode.startsWith("+"))
+			{
+				opFilter = 4;
+			}
+		}
+		return opFilter;
 	}
 
 	private static String filterParamaters(String mode) {
 		// TODO Auto-generated method stub
 		//filters different paramets, such as LABEL,X or Register,Register or #3 and so on
-		return mode;
+		if (mode.startsWith("=")
+		{
+			return literal; //should this be the label??
+		}
+		else if (mode.startsWith("#")
+		{
+			return immediate;
+		}
+		else if (mode.startsWith("@")
+		{
+			return indirect;
+		}
+		/**
+		else if (format is char, char (reg1, reg2))
+		{
+			return form2param;
+		}
+		**/
+		/**
+		else if (format is label, x)
+		{
+			return indexed;
+		}
+		**/
+		
 	}
 
 	public static void writeObjectCode(Integer code) 
