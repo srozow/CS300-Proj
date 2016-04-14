@@ -47,20 +47,15 @@ public class PassTwo
                 label = values[1];
                 opcode = values[2];
                 parameters = values[3];
-                /***
-                System.out.println(address);
-                System.out.println(label);
-                System.out.println(opcode);
-                System.out.println(parameters);
-                /****/
-		if (parameters != null)
-		{
-			if (Tables.SYMTAB.get(parameters) != null)
-				parameters = Tables.SYMTAB.get(parameters);
-		}
+				if (parameters != null)
+				{
+					if (Tables.SYMTAB.get(parameters) != null)
+						parameters = Tables.SYMTAB.get(parameters);
+				}
 				
-		code = generate_code(opcode, parameters);
-		//writeObjectCode(code);
+				code = generate_code(opcode, parameters);
+				System.out.println(code);
+				//writeObjectCode(code);
             }
 
         }
@@ -72,64 +67,62 @@ public class PassTwo
 	
 	private static String generate_code(String op, String params)
 	{
-		
-		//need to filter different parameters
-		// also need to filter instruction set extensions
-		//lets assume format 3
-		/**These functions filter different formats, modes, and data**/
-		// this filters the opcode allowing different formats, modes, and data filtering
+		// filter OPCODE for instruction modes
 		String opFilter = opFilter(op);
-		// this function will later generate addressing mode from parameters
+		// filter parameters for addressing and instruction modes
 		String AddressingMode = filterParamaters(params);
-		/**After this there will be if statements to set up n, i x, b, p, and e for each formats, modes, and data**/
 		// get the object code for the OPCODE
 		op = Tables.OPTAB.get(op);
-		/************************************************************************/
-		// convert OPCODE and Params to binary
-		/***
-		System.out.println(params);
-		System.out.println(op);
-		/****/
-		// pad with extra zeroes (for format 3)
-		
-		//set up default values for testing purposes
-		/****/
+		// initialize variables
 		int n = 0;
 		int i = 0;
 		int x = 0;
 		int b = 0;
 		int p = 0;
 		int e = 0;
-		// need to set up r1 and r2
 		int r1 = 0;
 		int r2 = 0;
-		//convert r1 and r2 to binary if applicable
+		String out = "";
+		String ObjCode = "";
 		if (opFilter == 1)
 		{
-			// params are not needed
-			//convert op to binary
-			op = hexToBin(op);
-			// concatenate Opcode, flags, and Params
-			String out = op;
-			//System.out.println(out);
-			// convert back to hex
-			String ObjCode = binaryToHex(out);
-			return ObjCode;
+			// format 1 is simple, simply return the opcode for the line
+			return op;
 		}
 		else if (opFilter == 2)
 		{
 			//convert op to binary
 			op = hexToBin(op);
-			// need to get params to form r1 and r2
-			
-			//pad if needed for r1 and r2
-			
-			// concatenate Opcode, flags, and Params
-			String out = op + r1 + r2;
-			//System.out.println(out);
-			// convert back to hex
-			String ObjCode = binaryToHex(out);
-			//return ObjCode;
+			// need to get params to form r1 and r2 from CHAR1,CHAR2
+			if (params == String.format(params, (%a,%s))
+			{
+				// the first string of the parameter will be r1, the second will be r2
+				r1 = a;
+				r2 = s;
+				// start filtering r1 and r2
+				if (Table.REG.get(r2) != null)
+				{
+					r1 = Table.REG.get(r2);
+					if (Table.REG.get(r1) != null)
+					{
+						r2 = Table.REG.get(r1);
+					}
+					else
+					{
+						return "INCORRECT R1 VALUE"
+					}
+				}
+				else
+				{
+					return "INCORRECT R2 VALUE"
+				}
+			}
+			// concatenate Opcode, r1 and r2
+			out = op + r1 + r2;
+			// convert to hex
+			ObjCode = binaryToHex(out);
+			// return the code for the line
+			return ObjCode;
 		}
 		// set e to 0 (form 3)
 		// or to 1 (form 4)
@@ -143,22 +136,37 @@ public class PassTwo
 			e = 1;
 		}
 		// here is where we have statements for the parameters
-		
-		
+		if (AddressingMode == indirect)
+		{
+			n = 1;
+			i = 0;
+		}
+		if (AddressingMode == immediate)
+		{
+			n = 0;
+			i = 1;
+		}
+		if (AddressingMode == simple)
+		{
+			// should we use 0 for SIC and 1 for SIC/XE?
+			n = 0;
+			i = 0;
+		}
 		//convert op and params to binary
 		op = hexToBin(op);
+		// params may need to be filtered, such as for literals and to remove the #, =, and @ symbols
 		params = hexToBin(params);
-		// padding for either format 3 or format 4
+		// padding for format 3 or format 4, ensures correct length
 		if (e == 0)
 		{
+			// format the address for format 3
 			params = String.format("%012d", Integer.parseInt(params));
 		}
-		else
+		else if (e = 1)
 		{
+			// format the address for format 4
 			params = String.format("%020d", Integer.parseInt(params));
 		}
-		/****/
-		//need to figure out generation of code that leads to flags being set, flags for reference
 		/******
 		flags n & i:
 			n=0 & i=1 immediate addressing - TA is used as an operand value (no memory reference)
@@ -175,11 +183,13 @@ public class PassTwo
 			e=0 use Format 3
 			e=1 use Format 4
 		***/
+		//before concatenation remove the last 2 bits from op
+		op.substring(0,op.length() - 2);
 		// concatenate Opcode, flags, and Params
-		String out = op + n + i + x + b + p + e + params;
+		out = op + n + i + x + b + p + e + params;
 		//System.out.println(out);
 		// convert back to hex
-		String ObjCode = binaryToHex(out);
+		ObjCode = binaryToHex(out);
 		// print for testing
 		System.out.println(ObjCode);
 		// later will write to a file, or send to another function for writing to file
@@ -229,8 +239,11 @@ public class PassTwo
 		else if (format is label, x)
 		{
 			return indexed;
+		}**/
+		else
+		{
+			return simple;
 		}
-		**/
 		
 	}
 
