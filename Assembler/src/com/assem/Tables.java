@@ -96,4 +96,17 @@ public class Tables {
 		put("TIXR", "2");
 	}};
 	
+	//Register hash table.  It holds all the Register values.
+    public static Hashtable<String, String> REG = new Hashtable<String, String>() {{
+		put("A", "0000");
+		put("X", "0001");
+		put("L", "0010");
+		put("B", "0011");
+		put("S", "0100");
+		put("T", "0101");
+		put("F", "0110");
+		put("PC", "1000");
+		put("SW", "1001");
+	}};
+	
 }
