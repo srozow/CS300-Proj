@@ -76,37 +76,37 @@ public class Tables {
 	
 	//OPCODE FORM hash table.  It holds all the Opcode FORMAT values.
     public static Hashtable<String, String> OPFORM = new Hashtable<String, String>() {{
-		put("FIX", "1");
-		put("FLOAT", "1");
-		put("HIO", "1");
-		put("NORM", "1");
-		put("SIO", "1");
-		put("TIO", "1");
-		put("ADDR", "2");
-		put("CLEAR", "2");
-		put("ADDR", "2");
-		put("COMPR", "2");
-		put("DIVR", "2");
-		put("MULR", "2");
-		put("RMO", "2");
-		put("SHIFTL", "2");
-		put("SHIFTR", "2");
-		put("SUBR", "2");
-		put("SVC", "2");
-		put("TIXR", "2");
-	}};
+	put("FIX", "1");
+	put("FLOAT", "1");
+	put("HIO", "1");
+	put("NORM", "1");
+	put("SIO", "1");
+	put("TIO", "1");
+	put("ADDR", "2");
+	put("CLEAR", "2");
+	put("ADDR", "2");
+	put("COMPR", "2");
+	put("DIVR", "2");
+	put("MULR", "2");
+	put("RMO", "2");
+	put("SHIFTL", "2");
+	put("SHIFTR", "2");
+	put("SUBR", "2");
+	put("SVC", "2");
+	put("TIXR", "2");
+    }};
 	
 	//Register hash table.  It holds all the Register values.
     public static Hashtable<String, String> REG = new Hashtable<String, String>() {{
-		put("A", "0000");
-		put("X", "0001");
-		put("L", "0010");
-		put("B", "0011");
-		put("S", "0100");
-		put("T", "0101");
-		put("F", "0110");
-		put("PC", "1000");
-		put("SW", "1001");
-	}};
+	put("A", "0000");
+	put("X", "0001");
+	put("L", "0010");
+	put("B", "0011");
+	put("S", "0100");
+	put("T", "0101");
+	put("F", "0110");
+	put("PC", "1000");
+	put("SW", "1001");
+    }};
 	
 }
