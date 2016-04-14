@@ -73,8 +73,27 @@ public class Tables {
         put("TIXR", "B8");
         put("WD", "DC");
     }};
-
-
-
-
+	
+	//OPCODE FORM hash table.  It holds all the Opcode FORMAT values.
+    public static Hashtable<String, String> OPFORM = new Hashtable<String, String>() {{
+		put("FIX", "1");
+		put("FLOAT", "1");
+		put("HIO", "1");
+		put("NORM", "1");
+		put("SIO", "1");
+		put("TIO", "1");
+		put("ADDR", "2");
+		put("CLEAR", "2");
+		put("ADDR", "2");
+		put("COMPR", "2");
+		put("DIVR", "2");
+		put("MULR", "2");
+		put("RMO", "2");
+		put("SHIFTL", "2");
+		put("SHIFTR", "2");
+		put("SUBR", "2");
+		put("SVC", "2");
+		put("TIXR", "2");
+	}};
+	
 }
