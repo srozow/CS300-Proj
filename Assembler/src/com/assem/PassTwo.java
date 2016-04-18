@@ -18,7 +18,7 @@ public class PassTwo
 	private static Formatter obj;
 	private static String fileName = "intermediateFile.txt";
 
-    public static void passTwo(String fileName) {
+    public static void passTwo(String fileName, Int machineArch) {
 
         //open assembly the file
         openFile();
@@ -47,15 +47,14 @@ public class PassTwo
                 label = values[1];
                 opcode = values[2];
                 parameters = values[3];
-				if (parameters != null)
-				{
-					if (Tables.SYMTAB.get(parameters) != null)
-						parameters = Tables.SYMTAB.get(parameters);
-				}
-				
-				code = generate_code(opcode, parameters);
-				System.out.println(code);
-				//writeObjectCode(code);
+		if (parameters != null)
+		{
+			if (Tables.SYMTAB.get(parameters) != null)
+				parameters = Tables.SYMTAB.get(parameters);
+		}
+		code = generate_code(opcode, parameters);
+		System.out.println(code);
+		//writeObjectCode(code);
             }
 
         }
@@ -94,6 +93,9 @@ public class PassTwo
 			//convert op to binary
 			op = hexToBin(op);
 			// need to get params to form r1 and r2 from CHAR1,CHAR2
+/******************************************************************************************************************************************************
+		CHECK LINES 100-126
+******************************************************************************************************************************************************/
 			if (params == String.format(params, (%a,%s))
 			{
 				// the first string of the parameter will be r1, the second will be r2
@@ -102,20 +104,24 @@ public class PassTwo
 				// start filtering r1 and r2
 				if (Table.REG.get(r2) != null)
 				{
-					r1 = Table.REG.get(r2);
+					r2 = Table.REG.get(r2);
 					if (Table.REG.get(r1) != null)
 					{
-						r2 = Table.REG.get(r1);
+						r1 = Table.REG.get(r1);
 					}
 					else
 					{
-						return "INCORRECT R1 VALUE"
+						return "INCORRECT R1 VALUE";
 					}
 				}
 				else
 				{
-					return "INCORRECT R2 VALUE"
+					return "INCORRECT R2 VALUE";
 				}
+			}
+			else
+			{
+				return "INCORRECT INSTRUCTION FORMAT";
 			}
 			// concatenate Opcode, r1 and r2
 			out = op + r1 + r2;
@@ -138,19 +144,35 @@ public class PassTwo
 		// here is where we have statements for the parameters
 		if (AddressingMode == indirect)
 		{
+			x = 0;
 			n = 1;
 			i = 0;
 		}
-		if (AddressingMode == immediate)
+		else if (AddressingMode == immediate)
 		{
+			x = 0;
 			n = 0;
 			i = 1;
 		}
-		if (AddressingMode == simple)
+		else if (AddressingMode == simple)
 		{
-			// should we use 0 for SIC and 1 for SIC/XE?
-			n = 0;
-			i = 0;
+			x = 0;
+			//SIC
+			if (machineArch == 0)
+			{
+				n = 0;
+				i = 0;
+			}
+			//SIC/XE
+			else
+			{
+				n = 1;
+				i = 1;
+			}	
+		}
+		else if (AddressingMode == indexed)
+		{
+			x = 1;
 		}
 		//convert op and params to binary
 		op = hexToBin(op);
@@ -168,22 +190,17 @@ public class PassTwo
 			params = String.format("%020d", Integer.parseInt(params));
 		}
 		/******
-		flags n & i:
-			n=0 & i=1 immediate addressing - TA is used as an operand value (no memory reference)
-			n=1 & i=0 indirect addressing - word at TA (in memory) is fetched & used as an address to fetch the operand from
-			n=0 & i=0 simple addressing TA is the location of the operand
-			n=1 & i=1 simple addressing same as n=0 & i=0
 		flag x:
 			x=1 indexed addressing add contents of X register to TA calculation
 		flag b & p (Format 3 only):
 			b=0 & p=0 direct addressing displacement/address field contains TA (note Format 4 always uses direct addressing)
 			b=0 & p=1 PC relative addressing - TA=(PC)+disp (-2048<=disp<=2047)*
 			b=1 & p=0 Base relative addressing - TA=(B)+disp (0<=disp<=4095)**
-		flag e:
-			e=0 use Format 3
-			e=1 use Format 4
 		***/
 		//before concatenation remove the last 2 bits from op
+		/******************************************************************************************************************************************************
+		CHECK LINE BELOW
+		******************************************************************************************************************************************************/
 		op.substring(0,op.length() - 2);
 		// concatenate Opcode, flags, and Params
 		out = op + n + i + x + b + p + e + params;
@@ -229,14 +246,11 @@ public class PassTwo
 		{
 			return indirect;
 		}
+/******************************************************************************************************************************************************
+		CHECK ELSE IF STATEMENT BELOW
+******************************************************************************************************************************************************/
 		/**
-		else if (format is char, char (reg1, reg2))
-		{
-			return form2param;
-		}
-		**/
-		/**
-		else if (format is label, x)
+		else if (format is LABEL,X) Tables.SYMTAB.get() the first value of the parameter
 		{
 			return indexed;
 		}**/
