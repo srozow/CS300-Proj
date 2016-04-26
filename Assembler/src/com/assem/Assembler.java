@@ -12,6 +12,7 @@ public class Assembler {
     private Scanner scan;
     private Formatter inter;
     private int LOCCTR = 0;
+    private int machineARCH = 0;
     private static String fileName = "assemblyCode/control_section.txt";
 
 
@@ -56,6 +57,9 @@ public class Assembler {
                         System.out.println("Error! Repeat label " + label + " found in file.");
                 }
 
+                if (Tables.ARCH.get(opcode)!= null){
+                    machineARCH = 1;
+                }
 
                 //Next we need use the opcode to increment the LOCCTR
                 if (opcode != null) {

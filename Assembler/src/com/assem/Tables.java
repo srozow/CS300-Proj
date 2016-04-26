@@ -109,5 +109,43 @@ public class Tables {
 	put("SW", "1001");
     }};
 
+    //Table mnemonic variables used in SIC/XE
+    public static Hashtable<String, String> ARCH = new Hashtable<String, String>() {
+        {
+            put("ADDF", "1");
+            put("ADDR", "1");
+            put("CLEAR", "1");
+            put("COMPF", "1");
+            put("COMPR", "1");
+            put("DIVF", "1");
+            put("DIVR", "1");
+            put("FIX", "1");
+            put("FLOAT", "1");
+            put("HIO", "1");
+            put("LDB", "1");
+            put("LDF", "1");
+            put("LDS", "1");
+            put("LDT", "1");
+            put("LPS", "1");
+            put("MULF", "1");
+            put("MULR", "1");
+            put("NORM", "1");
+            put("RMO", "1");
+            put("SHIFTL", "1");
+            put("SHIFTR", "1");
+            put("SIO", "1");
+            put("SSK", "1");
+            put("STB", "1");
+            put("STF", "1");
+            put("STI", "1");
+            put("STS", "1");
+            put("STT", "1");
+            put("SUBF", "1");
+            put("SUBR", "1");
+            put("SVC", "1");
+            put("TIO", "1");
+            put("TIXR", "1");
 
+
+        }};
 }
