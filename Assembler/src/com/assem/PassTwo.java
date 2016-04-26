@@ -4,129 +4,19 @@ import java.io.File;
 import java.util.Scanner;
 
 /**
- * 
- Created by ckhenson on 4/4/2016, with code from Assembler.java Created by efetsko on 3/28/2016.
+ * Created by efetsko on 3/28/2016.
  */
-public class PassTwo 
-{
+public class PassTwo {
 
     private static Scanner scan;
-	private Formatter inter;
 
     public static void passTwo(String fileName) {
 
-        //open assembly the file
-        openFile();
-        //make the intermediate file that will be passed onto passTwo
-        makeFile();
-
-        //Loop as long as there's more data in the file
-        while(scan.hasNext()) {
-
-            //Local variables
-            String line = scan.nextLine();
-            String label = null;
-            String opcode = null;
-            String parameters = null;
-            String address = null;
-			Int code = null;
-
-
-            //Setup the values for the current line's address, label, opcode, and parameters if it exists
-            if (!line.trim().isEmpty() && !line.startsWith(".")) {
-
-                //First setup the values of this line's label, opcode, and parameters
-                String[] values = readLine(line);
-				address = values[0]
-                label = values[1];
-                opcode = values[2];
-                parameters = values[3];
-				
-				if (paramaters != null)
-				{
-					if (Tables.SYMTAB.get(paramaters) != null)
-						paramaters = Tables.SYMTAB.get(paramaters);
-				}
-				
-				code = generate_code(opcode, parameters);
-				writeObjectCode(code);
-            }
-
-        }
-        //close the files
-        closeFile();
-        closeObj();
+        //Sets up a scanner to read from the intermediate file.
+        openIntermediate();
 
 
     }
-	
-	private void generate_code(String op, String params)
-	{
-		
-		//need to filter different parameters
-		// also need to filter instruction set extensions
-		//lets assume format 3
-		// get the object code for the OPCODE
-		op = Tables.OP.get(op);
-		// convert OPCODE and Params to binary
-		op = hexToBin(op);
-		params = hexToBin(params);
-		// convert to strings (for concatenation)
-		Integer.toString(op);
-		Integer.toString(params);
-		// pad with extra zeroes (for format 3)
-		params = String.format("%012d", params);
-		//set up default values for testing purposes
-		String n = 0;
-		String i = 0;
-		String x = 0;
-		String b = 0;
-		String p = 0;
-		//need to figure out generation of code that leads to flags being set, flags for reference
-		/******
-		flags n & i:
-			n=0 & i=1 immediate addressing - TA is used as an operand value (no memory reference)
-			n=1 & i=0 indirect addressing - word at TA (in memory) is fetched & used as an address to fetch the operand from
-			n=0 & i=0 simple addressing TA is the location of the operand
-			n=1 & i=1 simple addressing same as n=0 & i=0
-		flag x:
-			x=1 indexed addressing add contents of X register to TA calculation
-		flag b & p (Format 3 only):
-			b=0 & p=0 direct addressing displacement/address field contains TA (note Format 4 always uses direct addressing)
-			b=0 & p=1 PC relative addressing - TA=(PC)+disp (-2048<=disp<=2047)*
-			b=1 & p=0 Base relative addressing - TA=(B)+disp (0<=disp<=4095)**
-		flag e:
-			e=0 use Format 3
-			e=1 use Format 4
-		***/
-		//OP code n i x b p e + address
-		//op, n, i, x, b, p, e, params
-		// concatenate Opcode, flags, and Params
-		String out = "op" + "n" + "i" + "x" + "b" + "p" + "e" + "params"'
-		// convert to Integers
-		int ObjCode = Integer.parseInt(numberAsString);
-		// convert back to hex
-		ObjCode = binaryToHex(ObjCode);
-		// print for testing
-		System.out.println(out);
-		// later will write to a file, or send to another function for writing to file
-		return ObjCode
-	}
-
-	public void writeObjectCode(String code) 
-	{
-		// write code to file
-	}
-
-	public static String hexToBin(String s) {
-	  return new BigInteger(s, 16).toString(2);
-	}
-
-	public static String binaryToHex(String bin) {
-	   return String.format("%21X", Long.parseLong(bin,2)) ;
-	}
-	
-	
 
     private static void openIntermediate() {
         try {
@@ -137,52 +27,6 @@ public class PassTwo
         }
 
     }
-	// read line function
-	private String[] readLine(String line) {
-
-        String[] values = new String[3];
-        //Checks to see if the line starts with a tab
-        if (line.startsWith("\u0009")) {
-            line = line.trim();
-            String[] s = line.split("\u0009");
-            values[0] = null;
-            values[1] = s[0];
-            if (s.length > 1)
-                values[2] = s[1];
-        }
-        else {
-            line = line.trim();
-            String[] s = line.split("\u0009");
-            values[0] = s[0];
-            values[1] = s[1];
-            if (s.length > 2)
-                values[2] = s[2];
-        }
-        return values;
-    }
-
-    //Readfile functions
-
-
-    public void closeIntermediate() {
-        scan.close();
-    }
-
-    //Writefile functions
-
-    public void makeFile() {
-        try {
-            obj = new Formatter("objectCode.txt");
-        }
-        catch(Exception e) {
-            System.out.println("Failed to create file.");
-        }
-    }
-	
-	public void closeObj() {
-        obj.close();
-    }
 
 
 }
-
